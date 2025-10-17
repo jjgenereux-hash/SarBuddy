@@ -1,9 +1,11 @@
-from flask import Flask
+from flask import Flask, request
 
 app = Flask(__name__)
 
-@app.route('/')
+@app.route('/', methods=['GET', 'POST'])
 def hello_world():
+    if request.method == 'POST':
+        return 'POST request received at root path!', 200
     return 'Hello from Cloud Run!'
 
 if __name__ == '__main__':
