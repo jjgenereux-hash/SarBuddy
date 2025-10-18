@@ -1,0 +1,10 @@
+name: sarbuddy
+channels:
+  - defaults
+  - conda-forge
+dependencies:
+  - python=3.11
+  - pip
+  - pip:
+    - Flask==3.0.3
+    - gunicorn==22.0.0
