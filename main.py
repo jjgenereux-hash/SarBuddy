@@ -8,21 +8,18 @@ app = Flask(__name__)
 # Database connection configuration
 def get_db_connection():
     """Create and return a database connection"""
-    # Check if running in Cloud Run with Cloud SQL Proxy
-    cloud_sql_connection_name = os.environ.get('db_conn')
+    # Check if we have db_host from environment (Cloud Run with private IP)
+    db_host = os.environ.get('db_host')
     
-    if cloud_sql_connection_name:
-        # Connect via Cloud SQL Unix socket (for Cloud Run)
-        db_user = os.environ.get('db_user', 'postgres')
-        db_password = os.environ.get('db_password', 'pet123')
-        db_name = os.environ.get('db_name', 'sarbuddy')
-        db_socket_dir = '/cloudsql'
-        
+    if db_host:
+        # Connect via private IP in Cloud Run VPC
+        # Use postgres user/password for sarbuddy database
         conn = psycopg2.connect(
-            user=db_user,
-            password=db_password,
-            database=db_name,
-            host=f'{db_socket_dir}/{cloud_sql_connection_name}'
+            user='postgres',
+            password='pet123',
+            database='sarbuddy',
+            host=db_host,
+            port=5432
         )
     else:
         # Fallback to DATABASE_URL for local development
