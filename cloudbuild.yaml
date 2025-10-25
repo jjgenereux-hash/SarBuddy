@@ -13,14 +13,13 @@ steps:
     args:
       - 'run'
       - 'deploy'
-      - 'tiered-web-app-api'
+      - 'sarbuddy'
       - '--image'
       - 'gcr.io/$PROJECT_ID/sarbuddy:$COMMIT_SHA'
       - '--region'
-      - 'us-central1'
+      - 'us-east4'
       - '--platform'
       - 'managed'
       - '--allow-unauthenticated'
-
 images:
   - 'gcr.io/$PROJECT_ID/sarbuddy:$COMMIT_SHA'
