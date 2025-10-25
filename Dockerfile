@@ -1,24 +1,32 @@
-# Use official Python runtime as base image
-FROM python:3.11-slim
+# Build stage
+FROM node:18-alpine AS build
 
 # Set working directory
 WORKDIR /app
 
-# Copy requirements file
-COPY requirements.txt .
+# Copy package files
+COPY package*.json ./
 
 # Install dependencies
-RUN pip install --no-cache-dir -r requirements.txt
+RUN npm ci
 
-# Copy application code
+# Copy source code
 COPY . .
 
-# Expose port 8080 (Cloud Run default)
+# Build the application
+RUN npm run build
+
+# Production stage
+FROM nginx:alpine
+
+# Copy built assets from build stage
+COPY --from=build /app/dist /usr/share/nginx/html
+
+# Copy nginx configuration
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+# Expose port 8080 for Cloud Run
 EXPOSE 8080
 
-# Set environment variable for Flask
-ENV FLASK_APP=main.py
-ENV PORT=8080
-
-# Run the application
-CMD exec gunicorn --bind :$PORT --workers 1 --threads 8 --timeout 0 main:app
+# Start nginx
+CMD ["nginx", "-g", "daemon off;"]
